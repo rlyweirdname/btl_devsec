@@ -133,8 +133,7 @@ window.geometry("600x400")
 style = ttk.Style()
 style.configure('TButton',
                  borderwidth=1, 
-                 relief='flat',
-                 borderradius=120)
+                 relief='flat')
 
 
 # Biến để lưu đường dẫn file
