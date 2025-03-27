@@ -1,4 +1,5 @@
-import tkinter as tk
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from tkinter import filedialog, scrolledtext, messagebox
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
@@ -12,7 +13,7 @@ def chon_file():
     if filename:
         normalized_path = os.path.abspath(filename)  # Normalize the file path
         file_path_var.set(normalized_path)
-        result_text.insert(tk.END, f"Đã chọn file: {normalized_path}\n")
+        result_text.insert(ttk.END, f"Đã chọn file: {normalized_path}\n")
 
 def ky_so_file():
     file_path = file_path_var.get()
@@ -22,10 +23,10 @@ def ky_so_file():
 
     if not os.path.exists(file_path):  # Check if the file exists
         messagebox.showerror("Lỗi", f"File không tồn tại: {file_path}")
-        result_text.insert(tk.END, f"Lỗi: File không tồn tại: {file_path}\n")
+        result_text.insert(ttk.END, f"Lỗi: File không tồn tại: {file_path}\n")
         return
 
-    result_text.insert(tk.END, f"Đang thực hiện ký số file: {file_path}...\n")
+    result_text.insert(ttk.END, f"Đang thực hiện ký số file: {file_path}...\n")
 
     try:
         # 1. Đọc dữ liệu file cần ký
@@ -53,23 +54,23 @@ def ky_so_file():
 
         # 4. Hiển thị chữ ký số (dạng hex)
         signature_hex = signature.hex()
-        result_text.insert(tk.END, "Chữ ký số (hex):\n")
-        result_text.insert(tk.END, signature_hex + "\n\n")
+        result_text.insert(ttk.END, "Chữ ký số (hex):\n")
+        result_text.insert(ttk.END, signature_hex + "\n\n")
 
         # 5. Lưu chữ ký số vào file .sig (cùng tên file gốc)
         signature_file_path = file_path + ".sig"
         with open(signature_file_path, "wb") as sig_file:
             sig_file.write(signature)
-        result_text.insert(tk.END, f"Đã lưu chữ ký số vào file: {signature_file_path}\n")
+        result_text.insert(ttk.END, f"Đã lưu chữ ký số vào file: {signature_file_path}\n")
 
-        result_text.insert(tk.END, "Ký số file thành công!\n")
+        result_text.insert(ttk.END, "Ký số file thành công!\n")
 
     except FileNotFoundError:
         messagebox.showerror("Lỗi", f"File không tồn tại: {file_path}")
-        result_text.insert(tk.END, f"Lỗi: File không tồn tại: {file_path}\n")
+        result_text.insert(ttk.END, f"Lỗi: File không tồn tại: {file_path}\n")
     except Exception as e:
         messagebox.showerror("Lỗi", f"Lỗi ký số file: {e}")
-        result_text.insert(tk.END, f"Lỗi: {e}\n")
+        result_text.insert(ttk.END, f"Lỗi: {e}\n")
 
 def xac_minh_chu_ky_file():
     file_path = file_path_var.get()
@@ -79,10 +80,10 @@ def xac_minh_chu_ky_file():
 
     if not os.path.exists(file_path):  # Check if the file exists
         messagebox.showerror("Lỗi", f"File không tồn tại: {file_path}")
-        result_text.insert(tk.END, f"Lỗi: File không tồn tại: {file_path}\n")
+        result_text.insert(ttk.END, f"Lỗi: File không tồn tại: {file_path}\n")
         return
 
-    result_text.insert(tk.END, f"Đang thực hiện xác minh chữ ký số file: {file_path}...\n")
+    result_text.insert(ttk.END, f"Đang thực hiện xác minh chữ ký số file: {file_path}...\n")
 
     try:
         # 1. Đọc dữ liệu file cần xác minh
@@ -113,53 +114,60 @@ def xac_minh_chu_ky_file():
             hashes.SHA256()
         )
 
-        result_text.insert(tk.END, "Chữ ký số HỢP LỆ!\n")
+        result_text.insert(ttk.END, "Chữ ký số HỢP LỆ!\n")
 
     except FileNotFoundError:
         messagebox.showerror("Lỗi", "File hoặc file chữ ký không tồn tại!")
-        result_text.insert(tk.END, "Lỗi: File hoặc file chữ ký không tồn tại!\n")
+        result_text.insert(ttk.END, "Lỗi: File hoặc file chữ ký không tồn tại!\n")
     except InvalidSignature:
-        result_text.insert(tk.END, "Chữ ký số KHÔNG HỢP LỆ!\n")
+        result_text.insert(ttk.END, "Chữ ký số KHÔNG HỢP LỆ!\n")
         messagebox.showerror("Lỗi", "Chữ ký số KHÔNG HỢP LỆ!")
     except Exception as e:
         messagebox.showerror("Lỗi", f"Lỗi xác minh chữ ký: {e}")
-        result_text.insert(tk.END, f"Lỗi: {e}\n")
+        result_text.insert(ttk.END, f"Lỗi: {e}\n")
 
 # Tạo cửa sổ chính
-window = tk.Tk()
+window = ttk.Window(themename='minty') 
 window.title("Phần mềm Chữ ký Số Cơ Bản")
-window.geometry("600x400") # Kích thước cửa sổ
+window.geometry("600x400") 
+style = ttk.Style()
+style.configure('TButton',
+                 borderwidth=1, 
+                 relief='flat',
+                 borderradius=120)
+
 
 # Biến để lưu đường dẫn file
-file_path_var = tk.StringVar()
+file_path_var = ttk.StringVar()
 
 # Frame chứa các nút và ô nhập liệu chọn file
-file_frame = tk.Frame(window)
+file_frame = ttk.Frame(window)
 file_frame.pack(pady=10)
 
-file_label = tk.Label(file_frame, text="File:")
+file_label = ttk.Label(file_frame, text="File:")
 file_label.grid(row=0, column=0, padx=5)
 
-file_entry = tk.Entry(file_frame, textvariable=file_path_var, width=50)
+file_entry = ttk.Entry(file_frame, textvariable=file_path_var, width=50)
 file_entry.grid(row=0, column=1, padx=5)
 
-choose_file_button = tk.Button(file_frame, text="Chọn File", command=chon_file)
+
+choose_file_button = ttk.Button(file_frame, text="Chọn File", command=chon_file, bootstyle=(SECONDARY))
 choose_file_button.grid(row=0, column=2, padx=5)
 
 # Frame chứa các nút thao tác
-action_frame = tk.Frame(window)
+action_frame = ttk.Frame(window)
 action_frame.pack(pady=10)
 
-sign_button = tk.Button(action_frame, text="Ký Số File", command=ky_so_file)
+sign_button = ttk.Button(action_frame, text="Ký Số File", command=ky_so_file, bootstyle=(SECONDARY))
 sign_button.grid(row=0, column=0, padx=10)
 
-verify_button = tk.Button(action_frame, text="Xác Minh Chữ Ký", command=xac_minh_chu_ky_file)
+verify_button = ttk.Button(action_frame, text="Xác Minh Chữ Ký", command=xac_minh_chu_ky_file, bootstyle=(SECONDARY))
 verify_button.grid(row=0, column=1, padx=10)
 
 # Khu vực hiển thị kết quả (ScrolledText để có thanh cuộn nếu nhiều text)
 result_text = scrolledtext.ScrolledText(window, height=10)
-result_text.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-result_text.insert(tk.END, "Chào mừng đến với Phần mềm Chữ ký Số!\n")
+result_text.pack(padx=10, pady=10, fill=ttk.BOTH, expand=True)
+result_text.insert(ttk.END, "Chào mừng đến với Phần mềm Chữ ký Số!\n")
 
-# Chạy vòng lặp chính của Tkinter để hiển thị GUI
+# Chạy vòng lặp chính của ttkinter để hiển thị GUI
 window.mainloop()
