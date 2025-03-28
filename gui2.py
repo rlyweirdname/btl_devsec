@@ -38,11 +38,11 @@ def generate_mhk_sig_keys_scheme3(key_size=8):
     w_private = [random.randint(2, 10)]; current_sum = w_private[0]
     for _ in range(1, key_size): next_val = current_sum + random.randint(1, 10); w_private.append(next_val); current_sum += next_val
     log_steps.append(f"[*] Dãy siêu tăng bí mật (W): {w_private}"); log_steps.append(f"    Tổng(W) = {current_sum}")
-    modulus_q = current_sum + random.randint(10, 100); log_steps.append(f"[*] Môđun (q): {modulus_q}")
+    modulus_q = current_sum + random.randint(10, 100); log_steps.append(f"[*] Modulo (q): {modulus_q}")
     multiplier_r = random.randint(2, modulus_q - 1); inv = modInverse(multiplier_r, modulus_q)
     while inv is None: multiplier_r = random.randint(2, modulus_q - 1); inv = modInverse(multiplier_r, modulus_q)
     inverse_r_prime = inv
-    log_steps.append(f"[*] Số nhân (r): {multiplier_r}"); log_steps.append(f"[*] Nghịch đảo môđun (r'): {inverse_r_prime}")
+    log_steps.append(f"[*] Số nhân (r): {multiplier_r}"); log_steps.append(f"[*] Nghịch đảo modulo (r'): {inverse_r_prime}")
     b_public = []; log_steps.append("[*] Đang tính toán khóa công khai (B):")
     for i, w_i in enumerate(w_private): b_i = (w_i * multiplier_r) % modulus_q; b_public.append(b_i); log_steps.append(f"    B[{i}] = ({w_i} * {multiplier_r}) mod {modulus_q} = {b_i}")
     public_key = (b_public, modulus_q, multiplier_r); private_key = (w_private, inverse_r_prime)
@@ -64,7 +64,7 @@ def sign_mhk_scheme3(message, private_key_W_r_inv):
 
 def verify_mhk_scheme3(message, signature_s, public_key_B_q_r):
     log_steps = []; log_steps.append("\n--- Đang xác minh chữ ký ---"); log_steps.append(f"Thông điệp gốc: '{message[:50]}{'...' if len(message)>50 else ''}'"); log_steps.append(f"Chữ ký S nhận được: {signature_s}")
-    try: B, q, r = public_key_B_q_r; key_size = len(B); log_steps.append(f"Sử dụng khóa công khai (B): {B}"); log_steps.append(f"Sử dụng môđun (q): {q}"); log_steps.append(f"Sử dụng số nhân (r): {r}")
+    try: B, q, r = public_key_B_q_r; key_size = len(B); log_steps.append(f"Sử dụng khóa công khai (B): {B}"); log_steps.append(f"Sử dụng modulo (q): {q}"); log_steps.append(f"Sử dụng số nhân (r): {r}")
     except Exception as e: log_steps.append(f"Lỗi khi giải nén khóa công khai: {e}"); return False, log_steps
     h_bits = get_hash_bits(message, key_size, log_steps)
     if h_bits is None: return False, log_steps
@@ -92,7 +92,8 @@ class MHK_Signature_GUI_Scheme3:
         BUTTON_COLOR = "#e9edc9"
         TEXT_COLOR = "#d4a373"
         ENTRY_BG = "#fefae0" 
-        ENTRY_FG = TEXT_COLOR 
+        ENTRY_FG = TEXT_COLOR
+         
 
         master.config(bg=BG_COLOR) 
 
@@ -110,7 +111,7 @@ class MHK_Signature_GUI_Scheme3:
                 padding=5,
                 background=BUTTON_COLOR,
                 foreground=TEXT_COLOR,
-                font=('Arial', 10, 'bold'),
+                font=('Helvetica', 10, 'bold'),
                 borderwidth=1)
         
         style.map("TButton",
@@ -118,9 +119,9 @@ class MHK_Signature_GUI_Scheme3:
           relief=[('pressed', 'sunken'), ('!pressed', 'raised')])
 
         #Label style
-        style.configure("TLabel", padding=3, background=BG_COLOR, foreground=TEXT_COLOR, font=('Arial', 10))
+        style.configure("TLabel", padding=3, background=BG_COLOR, foreground=TEXT_COLOR, font=('Helvetica', 10))
         #LabelFrame title style
-        style.configure("TLabelframe.Label", background=BG_COLOR, foreground=TEXT_COLOR, font=("Arial", 10, "bold"))
+        style.configure("TLabelframe.Label", background=BG_COLOR, foreground=TEXT_COLOR, font=("Helvetica", 10, "bold"))
         #LabelFrame border/background
         style.configure("TLabelframe", background=BG_COLOR)
 
@@ -144,24 +145,24 @@ class MHK_Signature_GUI_Scheme3:
         self.lbl_key_size = ttk.Label(key_size_frame, text="Kích thước khóa:")
         self.lbl_key_size.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.entry_key_size = ttk.Entry(key_size_frame, width=10, foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9))
-        self.entry_key_size.insert(0, "8")  # Default value
+        self.entry_key_size = ttk.Entry(key_size_frame, width=10, foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9))
+        self.entry_key_size.insert(0, "8") 
         self.entry_key_size.pack(side=tk.LEFT, padx=5)
 
         self.lbl_pub_key = ttk.Label(key_frame, text="Khóa công khai (B):")
         self.lbl_pub_key.pack(fill=tk.X, pady=(5,0))
 
-        self.entry_pub_key_b = ttk.Entry(key_frame, width=90, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9))
+        self.entry_pub_key_b = ttk.Entry(key_frame, width=90, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9))
         self.entry_pub_key_b.pack(fill=tk.X, padx=5)
 
         pub_q_r_frame = ttk.Frame(key_frame, style="TFrame"); pub_q_r_frame.pack(fill=tk.X, pady=(2,5))
         self.lbl_pub_q = ttk.Label(pub_q_r_frame, text="Modulo (q):"); self.lbl_pub_q.pack(side=tk.LEFT, padx=(0, 5))
-        self.entry_pub_q = ttk.Entry(pub_q_r_frame, width=15, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9)); self.entry_pub_q.pack(side=tk.LEFT, padx=5)
+        self.entry_pub_q = ttk.Entry(pub_q_r_frame, width=15, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9)); self.entry_pub_q.pack(side=tk.LEFT, padx=5)
         self.lbl_pub_r = ttk.Label(pub_q_r_frame, text="Hệ số nhân (r):"); self.lbl_pub_r.pack(side=tk.LEFT, padx=(20, 5))
-        self.entry_pub_r = ttk.Entry(pub_q_r_frame, width=15, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9)); self.entry_pub_r.pack(side=tk.LEFT, padx=5)
+        self.entry_pub_r = ttk.Entry(pub_q_r_frame, width=15, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9)); self.entry_pub_r.pack(side=tk.LEFT, padx=5)
 
         self.lbl_priv_w = ttk.Label(key_frame, text="Khóa bí mật (W):"); self.lbl_priv_w.pack(fill=tk.X, pady=(5,0))
-        self.entry_priv_w = ttk.Entry(key_frame, width=90, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9))
+        self.entry_priv_w = ttk.Entry(key_frame, width=90, state='readonly', foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9))
         self.entry_priv_w.pack(fill=tk.X, padx=5)
 
 
@@ -170,7 +171,7 @@ class MHK_Signature_GUI_Scheme3:
         msg_frame.pack(fill=tk.X, pady=5)
 
         self.txt_message = scrolledtext.ScrolledText(msg_frame, height=5, width=80, wrap=tk.WORD,
-                                                     bg=ENTRY_BG, fg=ENTRY_FG, font=('Arial', 10))
+                                                     bg=ENTRY_BG, fg=ENTRY_FG, font=('Helvetica', 10))
         self.txt_message.pack(fill=tk.X, expand=True)
         self.btn_load_msg = ttk.Button(msg_frame, text="Tải từ tệp...", command=self.load_message_from_file)
         self.btn_load_msg.pack(side=tk.LEFT, pady=5, padx=5)
@@ -178,7 +179,7 @@ class MHK_Signature_GUI_Scheme3:
         #signature area
         sig_frame = ttk.LabelFrame(main_frame, text="Chữ ký (S)", padding="10")
         sig_frame.pack(fill=tk.X, pady=5)
-        self.entry_signature = ttk.Entry(sig_frame, width=80, foreground=ENTRY_FG, background=ENTRY_BG, font=('Consolas', 9))
+        self.entry_signature = ttk.Entry(sig_frame, width=80, foreground=ENTRY_FG, background=ENTRY_BG, font=('HelvLight', 9))
         self.entry_signature.pack(fill=tk.X, expand=True)
 
         #button frame
@@ -191,7 +192,7 @@ class MHK_Signature_GUI_Scheme3:
         log_frame = ttk.LabelFrame(main_frame, text="Nhật ký / Các bước trung gian", padding="10")
         log_frame.pack(fill=tk.BOTH, expand=True, pady=5)
         self.txt_log = scrolledtext.ScrolledText(log_frame, height=12, width=80, wrap=tk.WORD, state=tk.DISABLED,
-                                                 bg="#E0E0E0", fg="#333333", font=('Consolas', 9)) # Log uses different colors for readability
+                                                 bg="#E0E0E0", fg="#333333", font=('Consolas', 9))
         self.txt_log.pack(fill=tk.BOTH, expand=True)
 
     #GUI action menthod
@@ -212,7 +213,7 @@ class MHK_Signature_GUI_Scheme3:
 
 
     def generate_keys_gui(self):
-        self.log("Bắt đầu tạo khóa (Scheme 3)...")
+        self.log("Bắt đầu tạo khóa...")
         try:
             key_size_str = self.entry_key_size.get().strip()
             if not key_size_str.isdigit():
@@ -272,7 +273,7 @@ class MHK_Signature_GUI_Scheme3:
         if not message:
             messagebox.showwarning("Cảnh báo", "Thông điệp trống.")
             return
-        self.log("\nBắt đầu ký thông điệp (Scheme 3)...")
+        self.log("\nBắt đầu ký thông điệp...")
         try:
             signature_s, sign_log = sign_mhk_scheme3(message, self.private_key)
             for step in sign_log:
@@ -305,7 +306,7 @@ class MHK_Signature_GUI_Scheme3:
         except ValueError:
             messagebox.showerror("Lỗi", "Định dạng chữ ký không hợp lệ.")
             return
-        self.log("\nBắt đầu xác minh chữ ký (Scheme 3)...")
+        self.log("\nBắt đầu xác minh chữ ký...")
         try:
             is_valid, verify_log = verify_mhk_scheme3(message, signature_s, self.public_key)
             for step in verify_log:
