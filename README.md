@@ -122,8 +122,6 @@ btl_devsec/
 - **Kích thước khóa**:
   - Giá trị tối thiểu: `4`.
   - Giá trị tối đa: `128`.
-- **Bảo mật**:
-  - Thuật toán MHK không an toàn cho các ứng dụng thực tế. Dự án này chỉ mang tính chất học thuật.
 
 ---
 
