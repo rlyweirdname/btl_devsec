@@ -127,8 +127,8 @@ class MHK_Signature_GUI_Scheme3:
 
 
         #Main Frame
-        main_frame = ttk.Frame(master, padding="10", style="TFrame") # Style might be needed for bg
-        style.configure("TFrame", background=BG_COLOR) # Configure frame background
+        main_frame = ttk.Frame(master, padding="10", style="TFrame")
+        style.configure("TFrame", background=BG_COLOR) 
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         #key gen và display area
